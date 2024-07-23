@@ -1,0 +1,24 @@
+name: Daily
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 1 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Daily release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          date=daily/$(date +"%Y.%m.%d")
+          gh release create "$date" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="Release: ${date#v}" \
+              --generate-notes
